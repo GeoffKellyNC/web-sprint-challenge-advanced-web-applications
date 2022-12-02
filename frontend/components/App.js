@@ -89,7 +89,7 @@ export default function App() {
 
       if (postRes.status != 201){
         setSpinnerOn(false)
-        return
+        return 
       }
 
       setMessage(postRes.data.message)

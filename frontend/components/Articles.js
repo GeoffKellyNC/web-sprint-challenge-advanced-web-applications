@@ -16,7 +16,7 @@ export default function Articles(props) {
 
 
   if(!localStorage.getItem('token')){
-    setMessage('Ouch: jwt expired')
+    // setMessage('Ouch: jwt expired')
     return <Navigate to="/" />
   }
 
@@ -24,6 +24,9 @@ export default function Articles(props) {
     getArticles()
     setDisabled(false)
   }, [])
+
+  console.log('Articles: ', articles)
+
 
   return (
 
