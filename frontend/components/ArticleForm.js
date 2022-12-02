@@ -6,13 +6,29 @@ const initialFormValues = { title: '', text: '', topic: '' }
 export default function ArticleForm(props) {
   const [values, setValues] = useState(initialFormValues)
   // ✨ where are my props? Destructure them here
+  const { 
+    currentArticleId,
+    setCurrentArticleId,
+    updateArticle,
+    currentArticle,
+    postArticle,
+    articles
+  } = props
 
   useEffect(() => {
-    // ✨ implement
-    // Every time the `currentArticle` prop changes, we should check it for truthiness:
-    // if it's truthy, we should set its title, text and topic into the corresponding
-    // values of the form. If it's not, we should reset the form back to initial values.
-  })
+ 
+    if(currentArticle){
+      const articleToChange = articles.find(art => art.article_id === currentArticleId)
+
+      setValues({
+        title: articleToChange.title,
+        text: articleToChange.text,
+        topic: articleToChange.topic
+      })
+    } else {
+      setValues(initialFormValues)
+    }
+  }, [currentArticle])
 
   const onChange = evt => {
     const { id, value } = evt.target
@@ -21,21 +37,31 @@ export default function ArticleForm(props) {
 
   const onSubmit = evt => {
     evt.preventDefault()
-    // ✨ implement
-    // We must submit a new post or update an existing one,
-    // depending on the truthyness of the `currentArticle` prop.
+
+    if(currentArticle){
+      updateArticle({article_id: currentArticleId, article: values})
+      setValues(initialFormValues)
+      setCurrentArticleId(null)
+      return
+    }
+
+    postArticle(values)
+    setValues(initialFormValues)
+    return
+
+
   }
 
   const isDisabled = () => {
-    // ✨ implement
-    // Make sure the inputs have some values
+
+    const { title, text, topic } = values
+    return !title || !text || !topic ? true : false
   }
 
   return (
-    // ✨ fix the JSX: make the heading display either "Edit" or "Create"
-    // and replace Function.prototype with the correct function
+
     <form id="form" onSubmit={onSubmit}>
-      <h2>Create Article</h2>
+      <h2>{ currentArticle ? 'Edit Article' : 'Create Article'}</h2>
       <input
         maxLength={50}
         onChange={onChange}
@@ -58,7 +84,16 @@ export default function ArticleForm(props) {
       </select>
       <div className="button-group">
         <button disabled={isDisabled()} id="submitArticle">Submit</button>
-        <button onClick={Function.prototype}>Cancel edit</button>
+        {
+          currentArticle && (
+            <button onClick={
+            () => {
+            setCurrentArticleId(null)
+            setValues(initialFormValues)
+          }
+        }>Cancel edit</button>
+          )
+        }
       </div>
     </form>
   )
